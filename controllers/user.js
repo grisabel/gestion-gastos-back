@@ -52,25 +52,6 @@ function saveUser(req, res){
     }
 }
 
-function authenticated(req, res){
-    if(req.body.token===null){
-        User.findOne({email: req.body.email.toLowerCase()}, (err, userS)=>{
-            if(err){
-                return res.status(500).send({message :'Error al comprobar el usuario'});
-             }else{
-                if(userS){
-                    return res.status(200).send({token:jwt.createToken(userS)});
-                }else{
-                    return res.status(404).send({message:"El usuario no está registrado"})
-                }
-                
-            }
-        });
-    }
-    else{
-        return res.status(500).send({message: 'El usuario ya dispone de token'})
-    }
-}
 
 function login(req, res){
    
@@ -88,13 +69,15 @@ function login(req, res){
                             if(check){
                                 return res.status(200).send({token:jwt.createToken(userS)});
                             }else{
-                                return res.status(501).send({message:"El usuario y contraseña no coinciden"})
+                                return res.status(501).send({message:"El usuario y contraseña no coinciden"});
                             }          
-                        } 
+                        }else{
+                            return res.status(501).send({message:"El usuario ya dispone de token"});
+                        }
                     }
                 });    
             }else{
-                return res.status(404).send({message:"El usuario no está registrado"})
+                return res.status(404).send({message:"El usuario no está registrado"});
             }
         
         }
@@ -102,6 +85,5 @@ function login(req, res){
 }
 module.exports = {
     saveUser,
-    login, 
-    authenticated
+    login
 }

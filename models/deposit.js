@@ -1,6 +1,5 @@
 'use strict'
 
-const moment = require('moment');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
