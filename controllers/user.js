@@ -80,21 +80,23 @@ function login(req, res){
         }else{
             if(userS){
                 bcrypt.compare(req.body.password, userS.password, (err, check)=>{
-                    if(check){ 
-                        userS.password="";
-                        return  res.status(200).send({message: 'El usuario se ha logueado correctamente', userS});     
+                    if(err){
+                        return  res.status(500).send({message: 'Error al comprobar el usuario'}); 
                     }
                     else{
-                        return  res.status(501).send({message: 'El usuario y contraseña no coinciden'}); 
+                        if(req.body.token===null){
+                            if(check){
+                                return res.status(200).send({token:jwt.createToken(userS)});
+                            }else{
+                                return res.status(501).send({message:"El usuario y contraseña no coinciden"})
+                            }          
+                        } 
                     }
-                });
-                
+                });    
+            }else{
+                return res.status(404).send({message:"El usuario no está registrado"})
             }
-            else{
-               return res.status(404).send({
-                    message:'El usuario no está registrado'
-                });
-            }
+        
         }
     });
 }

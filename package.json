@@ -1,7 +1,7 @@
 {
   "name": "gestion-gastos-backend",
   "version": "1.0.0",
-  "description": "Api RESTful del prooyecto de Gestion de gastos",
+  "description": "Api RESTful del proyecto de Gestion de gastos",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",

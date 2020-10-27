@@ -5,6 +5,7 @@
 var Spend = require('../models/spend');
 var secret = 'clave_secreta_gestion_gastos';
 const jwt = require('../services/jwt');
+var moment = require('moment')
 
 //const param = require('../routes/user');
 
@@ -13,9 +14,9 @@ async function saveSpend(req, res){
    
     if(req.body.capacity && req.body.spend && req.body.date){
         var spend = new Spend();
-        spend.capacity= req.body.capacity;
-        spend.spend= req.body.spend;
-        spend.date= req.body.date;
+        spend.capacity= req.body.capacity; 
+        spend.spend=  Math.floor(req.body.spend*100)/100;
+        spend.date= moment(req.body.date).add(2,'hours');
         spend.comment= req.body.comment;
         var payload= jwt.decodeToken(req.headers.authorization.split(' ')[1],secret )
         spend.user_id= payload.sub;
@@ -67,8 +68,10 @@ function getSpend(req, res){
             $lt: new Date(req.query.year+"-"+req.query.month+"-14")
         }},{_id:0, user_id:0,__v:0}).sort({date:1}).exec((err,spends)=>{
             if(err){
+          
                 res.status(500).send({message:'ERROR en la consulta'})
             }else{
+               
                 res.status(200).send(spends)
             }
             
@@ -82,6 +85,7 @@ function getSpend(req, res){
             if(err){
                 res.status(500).send({message:'ERROR en la consulta'})
             }else{
+                console.log(spends)
                 res.status(200).send(spends)
             }
             

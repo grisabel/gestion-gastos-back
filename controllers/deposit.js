@@ -5,7 +5,7 @@
 var Deposit = require('../models/deposit');
 var secret = 'clave_secreta_gestion_gastos';
 const jwt = require('../services/jwt');
-const deposit = require('../models/deposit');
+var moment = require('moment')
 
 //const param = require('../routes/user');
 
@@ -15,8 +15,9 @@ async function saveDeposit(req, res){
     if(req.body.capacity && req.body.deposit && req.body.date){
         var deposit = new Deposit();
         deposit.capacity= req.body.capacity;
-        deposit.deposit= req.body.deposit;
-        deposit.date= req.body.date;
+        deposit.deposit= Math.floor(req.body.deposit*100)/100;
+        /*MUY IMPORTANTE UTC SON DOS HORAS MENOS*/
+        deposit.date= moment(req.body.date).add(2,'hours');
         deposit.comment= req.body.comment;
         var payload= jwt.decodeToken(req.headers.authorization.split(' ')[1],secret )
         deposit.user_id= payload.sub;
@@ -39,12 +40,11 @@ function getDeposit(req, res){
         
         var payload= jwt.decodeToken(req.headers.authorization.split(' ')[1],secret )
         let user_id= payload.sub;
-      console.log(req.query.week)
       
        if(req.query.week==="1"){
         Deposit.find({user_id:user_id,date: {
             $gte: new Date(req.query.year+"-"+req.query.month+"-01"),
-            $lt: new Date(req.query.year+"-"+req.query.month+"-07")
+            $lt: new Date(req.query.year+"-"+req.query.month+"-08")
         }},{_id:0, user_id:0,__v:0}).sort({date:1}).exec((err,deposits)=>{
             if(err){
                 res.status(500).send({message:'ERROR en la consulta'})
@@ -57,7 +57,7 @@ function getDeposit(req, res){
        if(req.query.week==="2"){
         Deposit.find({user_id:user_id,date: {
             $gte: new Date(req.query.year+"-"+req.query.month+"-08"),
-            $lt: new Date(req.query.year+"-"+req.query.month+"-14")
+            $lt: new Date(req.query.year+"-"+req.query.month+"-15")
         }},{_id:0, user_id:0,__v:0}).sort({date:1}).exec((err,deposits)=>{
             if(err){
                 res.status(500).send({message:'ERROR en la consulta'})
@@ -70,7 +70,7 @@ function getDeposit(req, res){
        if(req.query.week==="3"){
         Deposit.find({user_id:user_id,date: {
             $gte: new Date(req.query.year+"-"+req.query.month+"-15"),
-            $lt: new Date(req.query.year+"-"+req.query.month+"-21")
+            $lt: new Date(req.query.year+"-"+req.query.month+"-22")
         }},{_id:0, user_id:0,__v:0}).sort({date:1}).exec((err,deposits)=>{
             if(err){
                 res.status(500).send({message:'ERROR en la consulta'})
@@ -83,7 +83,7 @@ function getDeposit(req, res){
        if(req.query.week==="4"){
         Deposit.find({user_id:user_id,date: {
             $gte: new Date(req.query.year+"-"+req.query.month+"-22"),
-            $lt: new Date(req.query.year+"-"+req.query.month+"-31")
+            $lte: new Date(req.query.year+"-"+req.query.month+"-31")
         }},{_id:0, user_id:0,__v:0}).sort({date:1}).exec((err,deposits)=>{
             if(err){
                 res.status(500).send({message:'ERROR en la consulta'})
@@ -108,7 +108,7 @@ function getDepositMonth(req, res){
 
         Deposit.find({user_id:user_id,date: {
             $gte: new Date(req.query.year+"-"+req.query.month+"-01"),
-            $lt: new Date(req.query.year+"-"+req.query.month+"-31")
+            $lte: new Date(req.query.year+"-"+req.query.month+"-31")
         }},{_id:0, user_id:0,__v:0}).sort({date:1}).exec((err,deposits)=>{
             if(err){
                 res.status(500).send({message:'ERROR en la consulta'})
@@ -134,7 +134,7 @@ function getDepositYear(req, res){
 
         Deposit.find({user_id:user_id,date: {
             $gte: new Date(req.query.year+"-01-01"),
-            $lt: new Date(req.query.year+"-12-31")
+            $lte: new Date(req.query.year+"-12-31")
         }},{_id:0, user_id:0,__v:0}).sort({date:1}).exec((err,deposits)=>{
             if(err){
                 res.status(500).send({message:'ERROR en la consulta'})
